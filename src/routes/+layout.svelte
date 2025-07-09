@@ -1,7 +1,13 @@
-<script lang="ts">
-	import '../app.css';
-
-	let { children } = $props();
+<script>
+    import "../app.css";
+    import { locale, waitLocale } from 'svelte-i18n';
+    import '$lib/i18n'; // Import to initialize
 </script>
 
-{@render children()}
+{#await waitLocale()}
+    <!-- You can add a loading spinner here -->
+{:then}
+    <div lang={$locale ?? 'zh-TW'}>
+        <slot />
+    </div>
+{/await}

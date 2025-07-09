@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { _, locale } from 'svelte-i18n';
+
 	// Base URL for Apple Maps
 	const BASE_URL = 'https://maps.apple.com/';
 
@@ -35,32 +37,41 @@
 		return paramString ? `${BASE_URL}?${paramString}` : BASE_URL;
 	})();
 
-	// --- Copy to clipboard functionality ---
-	let copyButtonText = '複製連結';
+    let copyButtonTextKey = 'button.copy';
 	async function copyToClipboard() {
 		try {
 			await navigator.clipboard.writeText(generatedUrl);
-			copyButtonText = '已複製！';
+			copyButtonTextKey = 'button.copied';
 			setTimeout(() => {
-				copyButtonText = '複製連結';
+				copyButtonTextKey = 'button.copy';
 			}, 2000);
 		} catch (err) {
-			copyButtonText = '複製失敗';
+			copyButtonTextKey = 'button.copyFailed';
 			console.error('Failed to copy: ', err);
 		}
 	}
+
+    const setLocale = (lang) => {
+        locale.set(lang);
+    }
 </script>
 
 <svelte:head>
-    <title>Apple Maps URL 產生器</title>
-    <meta name="description" content="一個用來產生 Apple Maps URL 的工具，可以自訂地點、路線、地圖類型等參數。" />
+    <title>{$_('title')}</title>
+    <meta name="description" content={$_('subtitle')} />
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50 text-gray-800 flex flex-col items-center py-10 px-4">
 	<div class="w-full max-w-4xl">
+        <nav class="flex justify-center gap-4 mb-8">
+            <button class="text-gray-600 hover:text-blue-600 disabled:text-blue-600 disabled:font-bold" on:click={() => setLocale('zh-TW')} disabled={$locale === 'zh-TW'}>{$_('lang.zh-TW')}</button>
+            <button class="text-gray-600 hover:text-blue-600 disabled:text-blue-600 disabled:font-bold" on:click={() => setLocale('en')} disabled={$locale === 'en'}>{$_('lang.en')}</button>
+            <button class="text-gray-600 hover:text-blue-600 disabled:text-blue-600 disabled:font-bold" on:click={() => setLocale('ja')} disabled={$locale === 'ja'}>{$_('lang.ja')}</button>
+        </nav>
+
 		<header class="text-center mb-10">
-			<h1 class="text-4xl font-bold text-blue-600">Apple Maps URL 產生器</h1>
-			<p class="text-gray-600 mt-2">輕鬆建立自訂的 Apple Maps 連結</p>
+			<h1 class="text-4xl font-bold text-blue-600">{$_('title')}</h1>
+			<p class="text-gray-600 mt-2">{$_('subtitle')}</p>
 		</header>
 
 		<main class="bg-white p-8 rounded-xl shadow-lg">
@@ -68,60 +79,60 @@
 				
 				<!-- General Settings -->
 				<div class="space-y-6">
-					<h2 class="text-2xl font-semibold border-b-2 border-blue-500 pb-2 text-gray-900">基本地圖設定</h2>
+					<h2 class="text-2xl font-semibold border-b-2 border-blue-500 pb-2 text-gray-900">{$_('section.general')}</h2>
 					<div>
-						<label for="q" class="block text-sm font-medium text-gray-700 mb-1">地點名稱</label>
-						<input type="text" id="q" bind:value={q} placeholder="例如：Taipei 101" class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+						<label for="q" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.locationName')}</label>
+						<input type="text" id="q" bind:value={q} placeholder={$_('placeholder.locationName')} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
 					</div>
 					<div>
-						<label for="ll" class="block text-sm font-medium text-gray-700 mb-1">中心經緯度</label>
-						<input type="text" id="ll" bind:value={ll} placeholder="緯度,經度 (例如：25.033,121.564)" class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+						<label for="ll" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.latlon')}</label>
+						<input type="text" id="ll" bind:value={ll} placeholder={$_('placeholder.latlon')} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
 					</div>
 					<div>
-						<label for="address" class="block text-sm font-medium text-gray-700 mb-1">地址</label>
-						<input type="text" id="address" bind:value={address} placeholder="例如：台北市信義區市府路45號" class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+						<label for="address" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.address')}</label>
+						<input type="text" id="address" bind:value={address} placeholder={$_('placeholder.address')} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
 					</div>
 					<div>
-						<label for="z" class="block text-sm font-medium text-gray-700 mb-1">縮放等級</label>
-						<input type="number" id="z" bind:value={z} placeholder="例如：16 (數值越大越近)" class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+						<label for="z" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.zoom')}</label>
+						<input type="number" id="z" bind:value={z} placeholder={$_('placeholder.zoom')} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
 					</div>
 					<div>
-						<label for="t" class="block text-sm font-medium text-gray-700 mb-1">地圖樣式</label>
+						<label for="t" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.mapType')}</label>
 						<select id="t" bind:value={t} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
-							<option value="">預設</option>
-							<option value="m">標準 (Standard)</option>
-							<option value="k">衛星 (Satellite)</option>
-							<option value="h">混合 (Hybrid)</option>
+							<option value="">{$_('option.default')}</option>
+							<option value="m">{$_('option.standard')}</option>
+							<option value="k">{$_('option.satellite')}</option>
+							<option value="h">{$_('option.hybrid')}</option>
 						</select>
 					</div>
 				</div>
 
 				<!-- Navigation Settings -->
 				<div class="space-y-6">
-					<h2 class="text-2xl font-semibold border-b-2 border-blue-500 pb-2 text-gray-900">導航設定</h2>
+					<h2 class="text-2xl font-semibold border-b-2 border-blue-500 pb-2 text-gray-900">{$_('section.navigation')}</h2>
 					<div>
-						<label for="saddr" class="block text-sm font-medium text-gray-700 mb-1">起點</label>
-						<input type="text" id="saddr" bind:value={saddr} placeholder="Current Location 或地址/經緯度" class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+						<label for="saddr" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.startPoint')}</label>
+						<input type="text" id="saddr" bind:value={saddr} placeholder={$_('placeholder.startPoint')} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
 					</div>
 					<div>
-						<label for="daddr" class="block text-sm font-medium text-gray-700 mb-1">目的地</label>
-						<input type="text" id="daddr" bind:value={daddr} placeholder="地址或經緯度" class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+						<label for="daddr" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.destination')}</label>
+						<input type="text" id="daddr" bind:value={daddr} placeholder={$_('placeholder.destination')} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
 					</div>
 					<div>
-						<label for="dirflg" class="block text-sm font-medium text-gray-700 mb-1">導航模式</label>
+						<label for="dirflg" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.navMode')}</label>
 						<select id="dirflg" bind:value={dirflg} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
-							<option value="">未指定</option>
-							<option value="d">駕車 (Driving)</option>
-							<option value="w">步行 (Walking)</option>
-							<option value="r">大眾運輸 (Transit)</option>
+							<option value="">{$_('option.unspecified')}</option>
+							<option value="d">{$_('option.driving')}</option>
+							<option value="w">{$_('option.walking')}</option>
+							<option value="r">{$_('option.transit')}</option>
 						</select>
 					</div>
 					<div>
-						<label for="action" class="block text-sm font-medium text-gray-700 mb-1">動作</label>
+						<label for="action" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.action')}</label>
 						<select id="action" bind:value={action} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
-							<option value="">預設</option>
-							<option value="map">顯示地圖 (map)</option>
-							<option value="directions">顯示路線 (directions)</option>
+							<option value="">{$_('option.default')}</option>
+							<option value="map">{$_('option.showMap')}</option>
+							<option value="directions">{$_('option.showDirections')}</option>
 						</select>
 					</div>
 				</div>
@@ -129,18 +140,18 @@
 
 			<!-- Generated URL Display -->
 			<div class="mt-10">
-				<h2 class="text-xl font-semibold mb-2 text-gray-900">產生的連結</h2>
+				<h2 class="text-xl font-semibold mb-2 text-gray-900">{$_('section.generatedUrl')}</h2>
 				<div class="flex items-center space-x-2">
 					<input type="text" readonly value={generatedUrl} class="w-full bg-gray-200 text-gray-800 rounded-md p-3 border border-gray-300 font-mono text-sm">
 					<button on:click={copyToClipboard} class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md transition-colors duration-200 ease-in-out whitespace-nowrap">
-						{copyButtonText}
+						{$_(copyButtonTextKey)}
 					</button>
 				</div>
 			</div>
 		</main>
 
 		<footer class="text-center mt-10 text-gray-500">
-			<p>由 Gemini 為您打造 ✨</p>
+			<p>{$_('footer.credit')}</p>
 		</footer>
 	</div>
 </div>

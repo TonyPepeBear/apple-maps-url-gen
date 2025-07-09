@@ -1,0 +1,53 @@
+{
+    "title": "Apple Maps URL 產生器",
+    "subtitle": "輕鬆建立自訂的 Apple Maps 連結",
+    "section": {
+        "general": "基本地圖設定",
+        "navigation": "導航設定",
+        "generatedUrl": "產生的連結"
+    },
+    "label": {
+        "locationName": "地點名稱",
+        "latlon": "中心經緯度",
+        "address": "地址",
+        "zoom": "縮放等級",
+        "mapType": "地圖樣式",
+        "startPoint": "起點",
+        "destination": "目的地",
+        "navMode": "導航模式",
+        "action": "動作"
+    },
+    "placeholder": {
+        "locationName": "例如：Taipei 101",
+        "latlon": "緯度,經度 (例如：25.033,121.564)",
+        "address": "例如：台北市信義區市府路45號",
+        "zoom": "例如：16 (數值越大越近)",
+        "startPoint": "Current Location 或地址/經緯度",
+        "destination": "地址或經緯度"
+    },
+    "option": {
+        "default": "預設",
+        "unspecified": "未指定",
+        "standard": "標準 (Standard)",
+        "satellite": "衛星 (Satellite)",
+        "hybrid": "混合 (Hybrid)",
+        "driving": "駕車 (Driving)",
+        "walking": "步行 (Walking)",
+        "transit": "大眾運輸 (Transit)",
+        "showMap": "顯示地圖 (map)",
+        "showDirections": "顯示路線 (directions)"
+    },
+    "button": {
+        "copy": "複製連結",
+        "copied": "已複製！",
+        "copyFailed": "複製失敗"
+    },
+    "footer": {
+        "credit": "由 Gemini 為您打造 ✨"
+    },
+    "lang": {
+        "zh-TW": "繁體中文",
+        "en": "English",
+        "ja": "日本語"
+    }
+}

@@ -1,0 +1,53 @@
+{
+    "title": "Apple Maps URLジェネレーター",
+    "subtitle": "カスタムApple Mapsリンクを簡単に作成",
+    "section": {
+        "general": "基本マップ設定",
+        "navigation": "ナビゲーション設定",
+        "generatedUrl": "生成されたリンク"
+    },
+    "label": {
+        "locationName": "場所名",
+        "latlon": "中心緯度・経度",
+        "address": "住所",
+        "zoom": "ズームレベル",
+        "mapType": "マップタイプ",
+        "startPoint": "出発点",
+        "destination": "目的地",
+        "navMode": "ナビゲーションモード",
+        "action": "アクション"
+    },
+    "placeholder": {
+        "locationName": "例：東京タワー",
+        "latlon": "緯度,経度 (例：35.658,139.745)",
+        "address": "例：東京都港区芝公園４丁目２−８",
+        "zoom": "例：16 (数字が大きいほど近い)",
+        "startPoint": "現在地または住所/緯度,経度",
+        "destination": "住所または緯度,経度"
+    },
+    "option": {
+        "default": "デフォルト",
+        "unspecified": "指定なし",
+        "standard": "標準",
+        "satellite": "衛星",
+        "hybrid": "ハイブリッド",
+        "driving": "車",
+        "walking": "徒歩",
+        "transit": "公共交通機関",
+        "showMap": "地図を表示 (map)",
+        "showDirections": "経路を表示 (directions)"
+    },
+    "button": {
+        "copy": "リンクをコピー",
+        "copied": "コピーしました！",
+        "copyFailed": "コピー失敗"
+    },
+    "footer": {
+        "credit": "Geminiによって作成されました ✨"
+    },
+    "lang": {
+        "zh-TW": "繁體中文",
+        "en": "English",
+        "ja": "日本語"
+    }
+}
