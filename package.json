@@ -13,7 +13,8 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check .",
 		"deploy": "npm run build && wrangler deploy",
-		"cf-typegen": "wrangler types ./src/worker-configuration.d.ts"
+		"cf-typegen": "wrangler types ./src/worker-configuration.d.ts",
+		"sync:agents": "node sync-agents.js"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^6.0.0",
