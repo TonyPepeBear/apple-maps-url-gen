@@ -42,7 +42,7 @@
 		"copy": "リンクをコピー",
 		"copied": "コピーしました！",
 		"copyFailed": "コピー失敗",
-		"pasteFromClipboard": "クリップボードから読み取り"
+		"pasteFromClipboard": "クリップボードから Google マップリンクを読み取り"
 	},
 	"footer": {
 		"credit": "Geminiによって作成されました ✨"

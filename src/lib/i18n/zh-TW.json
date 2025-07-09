@@ -42,7 +42,7 @@
 		"copy": "複製連結",
 		"copied": "已複製！",
 		"copyFailed": "複製失敗",
-		"pasteFromClipboard": "從剪貼簿讀取"
+		"pasteFromClipboard": "從剪貼簿讀取 Google 地圖連結"
 	},
 	"footer": {
 		"credit": "由 Gemini 為您打造 ✨"
