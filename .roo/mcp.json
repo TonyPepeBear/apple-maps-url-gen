@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "streamable-http",
+      "url": "https://mcp.context7.com/mcp",
+      "timeout": 30,
+      "alwaysAllow": [
+        "get-library-docs"
+      ]
+    }
+  }
+}
