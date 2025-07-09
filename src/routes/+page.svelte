@@ -33,10 +33,10 @@
     onMount(async () => {
         L = (await import('leaflet')).default;
 
-        mapInstance = L.map(mapContainer).setView([25.0339, 121.5645], 13); // Taipei 101
+        mapInstance = L.map(mapContainer).setView([25.0339, 121.5645], 16); // Taipei 101
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         }).addTo(mapInstance);
 
         markerInstance = L.marker(mapInstance.getCenter()).addTo(mapInstance);
