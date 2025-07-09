@@ -20,5 +20,10 @@
 			class="rounded-md bg-blue-600 px-6 py-3 font-bold whitespace-nowrap text-white transition-colors duration-200 ease-in-out hover:bg-blue-700"
 			>{$_(copyButtonTextKey)}</button
 		>
+		<button
+			on:click={() => window.open(generatedUrl, '_blank')}
+			class="rounded-md bg-green-600 px-6 py-3 font-bold whitespace-nowrap text-white transition-colors duration-200 ease-in-out hover:bg-green-700"
+		>{$_('button.openInNewWindow')}</button
+		>
 	</div>
 </div>

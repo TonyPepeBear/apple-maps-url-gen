@@ -42,7 +42,8 @@
 		"copy": "Copy Link",
 		"copied": "Copied!",
 		"copyFailed": "Copy Failed",
-		"pasteFromClipboard": "Read Google Maps link from Clipboard"
+		"pasteFromClipboard": "Read Google Maps link from Clipboard",
+		"openInNewWindow": "Open link in new window"
 	},
 	"footer": {
 		"credit": "Built for you by Gemini ✨"
