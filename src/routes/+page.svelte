@@ -157,9 +157,5 @@
 			</div>
 
 		</main>
-
-		<footer class="text-center mt-10 text-gray-500">
-			<p>{$_('footer.credit')}</p>
-		</footer>
 	</div>
 </div>
