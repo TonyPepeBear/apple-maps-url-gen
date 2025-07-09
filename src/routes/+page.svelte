@@ -1,11 +1,15 @@
 <script lang="ts">
-	import { _, locale } from 'svelte-i18n';
-	import { onMount, onDestroy } from 'svelte';
+	import { _ } from 'svelte-i18n';
 	import type { Map, Marker } from 'leaflet';
+	import 'leaflet/dist/leaflet.css';
 
-	// --- Leaflet ---
-	let L: typeof import('leaflet');
-	import('leaflet/dist/leaflet.css');
+	import Header from '$lib/components/Header.svelte';
+	import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
+	import GeneratedUrl from '$lib/components/GeneratedUrl.svelte';
+	import GeneralSettings from '$lib/components/GeneralSettings.svelte';
+	import NavigationSettings from '$lib/components/NavigationSettings.svelte';
+	import ButtonControls from '$lib/components/ButtonControls.svelte';
+	import MapComponent from '$lib/components/Map.svelte';
 
 	// --- Base URL for Apple Maps ---
 	const BASE_URL = 'https://maps.apple.com/';
@@ -28,38 +32,8 @@
 	let pasteError = '';
 
 	// --- Map State ---
-	let mapContainer: HTMLElement;
-	let mapInstance: Map;
-	let markerInstance: Marker;
-
-	onMount(async () => {
-		L = (await import('leaflet')).default;
-		mapInstance = L.map(mapContainer).setView([25.0339, 121.5645], 16); // Taipei 101
-		L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-			attribution:
-				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-		}).addTo(mapInstance);
-		markerInstance = L.marker(mapInstance.getCenter()).addTo(mapInstance);
-		mapInstance.on('click', (e) => {
-			const newCoords = e.latlng;
-			markerInstance.setLatLng(newCoords);
-			ll = `${newCoords.lat.toFixed(5)},${newCoords.lng.toFixed(5)}`;
-		});
-	});
-
-	onDestroy(() => {
-		if (mapInstance) mapInstance.remove();
-	});
-
-	// --- Reactive Sync Logic ---
-	$: if (ll && mapInstance) {
-		const parts = ll.split(',').map((s) => parseFloat(s.trim()));
-		if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-			const newLatLng = L.latLng(parts[0], parts[1]);
-			mapInstance.setView(newLatLng, mapInstance.getZoom() || 13);
-			if (markerInstance) markerInstance.setLatLng(newLatLng);
-		}
-	}
+	let mapInstance: Map | undefined;
+	let markerInstance: Marker | undefined;
 
 	// --- Generated URL Logic ---
 	$: generatedUrl = (() => {
@@ -92,9 +66,6 @@
 			copyButtonTextKey = 'button.copyFailed';
 		}
 	}
-	const setLocale = (lang: string) => {
-		locale.set(lang);
-	};
 
 	async function handlePaste(event: ClipboardEvent) {
 		const pastedText = event.clipboardData?.getData('text');
@@ -140,286 +111,29 @@
 
 <div class="flex min-h-screen flex-col items-center bg-gray-50 px-4 py-10 text-gray-800">
 	<div class="w-full max-w-7xl">
-		<nav class="mb-8 flex justify-center gap-4">
-			<button
-				class="text-gray-600 hover:text-blue-600 disabled:font-bold disabled:text-blue-600"
-				on:click={() => setLocale('zh-TW')}
-				disabled={$locale === 'zh-TW'}>{$_('lang.zh-TW')}</button
-			>
-			<button
-				class="text-gray-600 hover:text-blue-600 disabled:font-bold disabled:text-blue-600"
-				on:click={() => setLocale('en')}
-				disabled={$locale === 'en'}>{$_('lang.en')}</button
-			>
-			<button
-				class="text-gray-600 hover:text-blue-600 disabled:font-bold disabled:text-blue-600"
-				on:click={() => setLocale('ja')}
-				disabled={$locale === 'ja'}>{$_('lang.ja')}</button
-			>
-		</nav>
-
-		<header class="mb-10 text-center">
-			<h1 class="text-4xl font-bold text-blue-600">{$_('title')}</h1>
-			<p class="mt-2 text-gray-600">{$_('subtitle')}</p>
-		</header>
+		<LanguageSwitcher />
+		<Header />
 
 		<main class="rounded-xl bg-white p-6 shadow-lg md:p-8">
 			<div class="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
 				<!-- Left Column: Controls -->
 				<div class="flex flex-col space-y-6">
-					<!-- Generated URL -->
-					<div class="space-y-2">
-						<h2 class="text-xl font-semibold text-gray-900">{$_('section.generatedUrl')}</h2>
-						<div class="flex items-center space-x-2">
-							<input
-								type="text"
-								readonly
-								value={generatedUrl}
-								class="w-full rounded-md border border-gray-300 bg-gray-200 p-3 font-mono text-sm text-gray-800"
-							/>
-							<button
-								on:click={copyToClipboard}
-								class="rounded-md bg-blue-600 px-6 py-3 font-bold whitespace-nowrap text-white transition-colors duration-200 ease-in-out hover:bg-blue-700"
-								>{$_(copyButtonTextKey)}</button
-							>
-						</div>
-					</div>
-
-					<!-- General Settings -->
-					<div class="space-y-6 border-t pt-4">
-						<h2 class="text-xl font-semibold text-gray-900">{$_('section.general')}</h2>
-						<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-							<div class="sm:col-span-2">
-								<label for="q" class="mb-1 block text-sm font-medium text-gray-700"
-									>{$_('label.locationName')}</label
-								>
-								<div class="relative">
-									<input
-										on:paste={handlePaste}
-										type="text"
-										id="q"
-										bind:value={q}
-										placeholder="貼上 Google Maps 短網址或輸入地點"
-										class="w-full rounded-md border-gray-300 bg-gray-50 p-2 transition-opacity focus:border-blue-500 focus:ring-blue-500"
-										class:opacity-50={isLoading}
-										disabled={isLoading}
-									/>
-									{#if isLoading}
-										<div class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
-											讀取中...
-										</div>
-									{/if}
-								</div>
-								{#if pasteError}
-									<p class="mt-1 text-xs text-red-600">{pasteError}</p>
-								{/if}
-							</div>
-							<div>
-								<label for="ll" class="mb-1 block text-sm font-medium text-gray-700"
-									>{$_('label.latlon')}</label
-								>
-								<input
-									type="text"
-									id="ll"
-									bind:value={ll}
-									placeholder={$_('placeholder.latlon')}
-									class="w-full rounded-md border-gray-300 bg-gray-50 p-2 focus:border-blue-500 focus:ring-blue-500"
-								/>
-							</div>
-							<div>
-								<label for="z" class="mb-1 block text-sm font-medium text-gray-700"
-									>{$_('label.zoom')}</label
-								>
-								<input
-									type="number"
-									id="z"
-									bind:value={z}
-									class="w-full rounded-md border-gray-300 bg-gray-50 p-2 focus:border-blue-500 focus:ring-blue-500"
-								/>
-								<p class="mt-1 text-xs text-gray-500">{$_('placeholder.zoom')}</p>
-							</div>
-							<div class="sm:col-span-2">
-								<label for="address" class="mb-1 block text-sm font-medium text-gray-700"
-									>{$_('label.address')}</label
-								>
-								<input
-									type="text"
-									id="address"
-									bind:value={address}
-									placeholder={$_('placeholder.address')}
-									class="w-full rounded-md border-gray-300 bg-gray-50 p-2 focus:border-blue-500 focus:ring-blue-500"
-								/>
-							</div>
-						</div>
-					</div>
-
-					<!-- Navigation Settings -->
-					<div class="space-y-6 border-t pt-4">
-						<h2 class="text-xl font-semibold text-gray-900">{$_('section.navigation')}</h2>
-						<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-							<div>
-								<label for="saddr" class="mb-1 block text-sm font-medium text-gray-700"
-									>{$_('label.startPoint')}</label
-								>
-								<input
-									type="text"
-									id="saddr"
-									bind:value={saddr}
-									placeholder={$_('placeholder.startPoint')}
-									class="w-full rounded-md border-gray-300 bg-gray-50 p-2 focus:border-blue-500 focus:ring-blue-500"
-								/>
-							</div>
-							<div>
-								<label for="daddr" class="mb-1 block text-sm font-medium text-gray-700"
-									>{$_('label.destination')}</label
-								>
-								<input
-									type="text"
-									id="daddr"
-									bind:value={daddr}
-									placeholder={$_('placeholder.destination')}
-									class="w-full rounded-md border-gray-300 bg-gray-50 p-2 focus:border-blue-500 focus:ring-blue-500"
-								/>
-							</div>
-						</div>
-					</div>
-
-					<!-- Button Controls -->
-					<div class="space-y-4 border-t pt-4">
-						<div class="space-y-2" role="group" aria-labelledby="map-type-label">
-							<div id="map-type-label" class="block text-sm font-medium text-gray-700">
-								{$_('label.mapType')}
-							</div>
-							<div class="isolate inline-flex w-full rounded-md shadow-sm">
-								<button
-									on:click={() => (t = '')}
-									class="relative inline-flex flex-1 items-center justify-center rounded-l-md px-3 py-2 text-sm font-semibold ring-1 ring-gray-300 transition-colors duration-150 ring-inset focus:z-10"
-									class:bg-blue-600={t === ''}
-									class:text-white={t === ''}
-									class:hover:bg-blue-700={t === ''}
-									class:text-gray-900={t !== ''}
-									class:hover:bg-gray-100={t !== ''}>{$_('option.default')}</button
-								>
-								<button
-									on:click={() => (t = 'm')}
-									class="relative -ml-px inline-flex flex-1 items-center justify-center px-3 py-2 text-sm font-semibold ring-1 ring-gray-300 transition-colors duration-150 ring-inset focus:z-10"
-									class:bg-blue-600={t === 'm'}
-									class:text-white={t === 'm'}
-									class:hover:bg-blue-700={t === 'm'}
-									class:text-gray-900={t !== 'm'}
-									class:hover:bg-gray-100={t !== 'm'}>{$_('option.standard')}</button
-								>
-								<button
-									on:click={() => (t = 'k')}
-									class="relative -ml-px inline-flex flex-1 items-center justify-center px-3 py-2 text-sm font-semibold ring-1 ring-gray-300 transition-colors duration-150 ring-inset focus:z-10"
-									class:bg-blue-600={t === 'k'}
-									class:text-white={t === 'k'}
-									class:hover:bg-blue-700={t === 'k'}
-									class:text-gray-900={t !== 'k'}
-									class:hover:bg-gray-100={t !== 'k'}>{$_('option.satellite')}</button
-								>
-								<button
-									on:click={() => (t = 'h')}
-									class="relative -ml-px inline-flex flex-1 items-center justify-center rounded-r-md px-3 py-2 text-sm font-semibold ring-1 ring-gray-300 transition-colors duration-150 ring-inset focus:z-10"
-									class:bg-blue-600={t === 'h'}
-									class:text-white={t === 'h'}
-									class:hover:bg-blue-700={t === 'h'}
-									class:text-gray-900={t !== 'h'}
-									class:hover:bg-gray-100={t !== 'h'}>{$_('option.hybrid')}</button
-								>
-							</div>
-						</div>
-						<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-							<div class="space-y-2" role="group" aria-labelledby="nav-mode-label">
-								<div id="nav-mode-label" class="block text-sm font-medium text-gray-700">
-									{$_('label.navMode')}
-								</div>
-								<div class="isolate inline-flex w-full rounded-md shadow-sm">
-									<button
-										on:click={() => (dirflg = '')}
-										class="relative inline-flex flex-1 items-center justify-center rounded-l-md px-3 py-2 text-sm font-semibold ring-1 ring-gray-300 transition-colors duration-150 ring-inset focus:z-10"
-										class:bg-blue-600={dirflg === ''}
-										class:text-white={dirflg === ''}
-										class:hover:bg-blue-700={dirflg === ''}
-										class:text-gray-900={dirflg !== ''}
-										class:hover:bg-gray-100={dirflg !== ''}>{$_('option.unspecified')}</button
-									>
-									<button
-										on:click={() => (dirflg = 'd')}
-										class="relative -ml-px inline-flex flex-1 items-center justify-center px-3 py-2 text-sm font-semibold ring-1 ring-gray-300 transition-colors duration-150 ring-inset focus:z-10"
-										class:bg-blue-600={dirflg === 'd'}
-										class:text-white={dirflg === 'd'}
-										class:hover:bg-blue-700={dirflg === 'd'}
-										class:text-gray-900={dirflg !== 'd'}
-										class:hover:bg-gray-100={dirflg !== 'd'}>{$_('option.driving')}</button
-									>
-									<button
-										on:click={() => (dirflg = 'w')}
-										class="relative -ml-px inline-flex flex-1 items-center justify-center px-3 py-2 text-sm font-semibold ring-1 ring-gray-300 transition-colors duration-150 ring-inset focus:z-10"
-										class:bg-blue-600={dirflg === 'w'}
-										class:text-white={dirflg === 'w'}
-										class:hover:bg-blue-700={dirflg === 'w'}
-										class:text-gray-900={dirflg !== 'w'}
-										class:hover:bg-gray-100={dirflg !== 'w'}>{$_('option.walking')}</button
-									>
-									<button
-										on:click={() => (dirflg = 'r')}
-										class="relative -ml-px inline-flex flex-1 items-center justify-center rounded-r-md px-3 py-2 text-sm font-semibold ring-1 ring-gray-300 transition-colors duration-150 ring-inset focus:z-10"
-										class:bg-blue-600={dirflg === 'r'}
-										class:text-white={dirflg === 'r'}
-										class:hover:bg-blue-700={dirflg === 'r'}
-										class:text-gray-900={dirflg !== 'r'}
-										class:hover:bg-gray-100={dirflg !== 'r'}>{$_('option.transit')}</button
-									>
-								</div>
-							</div>
-							<div class="space-y-2" role="group" aria-labelledby="action-label">
-								<div id="action-label" class="block text-sm font-medium text-gray-700">
-									{$_('label.action')}
-								</div>
-								<div class="isolate inline-flex w-full rounded-md shadow-sm">
-									<button
-										on:click={() => (action = '')}
-										class="relative inline-flex flex-1 items-center justify-center rounded-l-md px-3 py-2 text-sm font-semibold ring-1 ring-gray-300 transition-colors duration-150 ring-inset focus:z-10"
-										class:bg-blue-600={action === ''}
-										class:text-white={action === ''}
-										class:hover:bg-blue-700={action === ''}
-										class:text-gray-900={action !== ''}
-										class:hover:bg-gray-100={action !== ''}>{$_('option.default')}</button
-									>
-									<button
-										on:click={() => (action = 'map')}
-										class="relative -ml-px inline-flex flex-1 items-center justify-center px-3 py-2 text-sm font-semibold ring-1 ring-gray-300 transition-colors duration-150 ring-inset focus:z-10"
-										class:bg-blue-600={action === 'map'}
-										class:text-white={action === 'map'}
-										class:hover:bg-blue-700={action === 'map'}
-										class:text-gray-900={action !== 'map'}
-										class:hover:bg-gray-100={action !== 'map'}>{$_('option.showMap')}</button
-									>
-									<button
-										on:click={() => (action = 'directions')}
-										class="relative -ml-px inline-flex flex-1 items-center justify-center rounded-r-md px-3 py-2 text-sm font-semibold ring-1 ring-gray-300 transition-colors duration-150 ring-inset focus:z-10"
-										class:bg-blue-600={action === 'directions'}
-										class:text-white={action === 'directions'}
-										class:hover:bg-blue-700={action === 'directions'}
-										class:text-gray-900={action !== 'directions'}
-										class:hover:bg-gray-100={action !== 'directions'}
-										>{$_('option.showDirections')}</button
-									>
-								</div>
-							</div>
-						</div>
-					</div>
+					<GeneratedUrl {generatedUrl} {copyButtonTextKey} {copyToClipboard} />
+					<GeneralSettings
+						bind:q
+						bind:ll
+						bind:z
+						bind:address
+						{isLoading}
+						{pasteError}
+						{handlePaste}
+					/>
+					<NavigationSettings bind:saddr bind:daddr />
+					<ButtonControls bind:t bind:dirflg bind:action />
 				</div>
 
 				<!-- Right Column: Map -->
-				<div
-					bind:this={mapContainer}
-					class="min-h-[400px] w-full rounded-lg border border-gray-200 bg-gray-100 shadow-inner lg:min-h-full"
-					id="map-container"
-				>
-					<!-- Leaflet Map Renders Here -->
-				</div>
+				<MapComponent bind:ll bind:mapInstance bind:markerInstance />
 			</div>
 		</main>
 	</div>
