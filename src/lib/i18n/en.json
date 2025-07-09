@@ -19,6 +19,7 @@
 	},
 	"placeholder": {
 		"locationName": "e.g., Taipei 101",
+		"locationInput": "Paste a Google Maps short URL or enter a location",
 		"latlon": "latitude,longitude (e.g., 25.033,121.564)",
 		"address": "e.g., 1 Infinite Loop, Cupertino, CA",
 		"zoom": "e.g., 16 (higher is closer)",

@@ -19,6 +19,7 @@
 	},
 	"placeholder": {
 		"locationName": "例：東京タワー",
+		"locationInput": "Google マップの短縮 URL を貼り付けるか、場所を入力してください",
 		"latlon": "緯度,経度 (例：35.658,139.745)",
 		"address": "例：東京都港区芝公園４丁目２−８",
 		"zoom": "例：16 (数字が大きいほど近い)",

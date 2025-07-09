@@ -23,7 +23,7 @@
 					type="text"
 					id="q"
 					bind:value={q}
-					placeholder="貼上 Google Maps 短網址或輸入地點"
+					placeholder={$_('placeholder.locationInput')}
 					class="w-full rounded-md border-gray-300 bg-gray-50 p-2 transition-opacity focus:border-blue-500 focus:ring-blue-500"
 					class:opacity-50={isLoading}
 					disabled={isLoading}
