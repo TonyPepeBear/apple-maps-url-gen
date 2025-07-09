@@ -102,6 +102,54 @@
 			}
 		}
 	}
+
+	async function readFromClipboard() {
+		try {
+			const clipboardText = await navigator.clipboard.readText();
+			if (
+				clipboardText &&
+				(clipboardText.includes('maps.app.goo.gl') || clipboardText.includes('goo.gl/maps'))
+			) {
+				isLoading = true;
+				pasteError = '';
+				try {
+					const response = await fetch('/api/resolve-url', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ url: clipboardText })
+					});
+
+					if (!response.ok) {
+						const errorBody = (await response.json()) as { message?: string };
+						throw new Error(errorBody.message || 'Failed to resolve URL');
+					}
+
+					const data = (await response.json()) as { name: string; ll: string };
+					q = data.name;
+					ll = data.ll;
+				} catch (error: any) {
+					console.error('Clipboard read error:', error);
+					pasteError = error.message;
+					setTimeout(() => {
+						pasteError = '';
+					}, 5000); // Clear error after 5s
+				} finally {
+					isLoading = false;
+				}
+			} else {
+				pasteError = '剪貼簿中沒有有效的 Google Maps 網址';
+				setTimeout(() => {
+					pasteError = '';
+				}, 3000);
+			}
+		} catch (error: any) {
+			console.error('Clipboard access error:', error);
+			pasteError = '無法存取剪貼簿，請確認瀏覽器權限';
+			setTimeout(() => {
+				pasteError = '';
+			}, 3000);
+		}
+	}
 </script>
 
 <svelte:head>
@@ -126,7 +174,7 @@
 						bind:address
 						{isLoading}
 						{pasteError}
-						{handlePaste}
+						{readFromClipboard}
 					/>
 					<NavigationSettings bind:saddr bind:daddr />
 					<ButtonControls bind:t bind:dirflg bind:action />

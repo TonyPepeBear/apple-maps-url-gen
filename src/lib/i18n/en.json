@@ -19,7 +19,7 @@
 	},
 	"placeholder": {
 		"locationName": "e.g., Taipei 101",
-		"locationInput": "Paste a Google Maps short URL or enter a location",
+		"locationInput": "e.g., Taipei 101",
 		"latlon": "latitude,longitude (e.g., 25.033,121.564)",
 		"address": "e.g., 1 Infinite Loop, Cupertino, CA",
 		"zoom": "e.g., 16 (higher is closer)",
@@ -41,7 +41,8 @@
 	"button": {
 		"copy": "Copy Link",
 		"copied": "Copied!",
-		"copyFailed": "Copy Failed"
+		"copyFailed": "Copy Failed",
+		"pasteFromClipboard": "Read from Clipboard"
 	},
 	"footer": {
 		"credit": "Built for you by Gemini ✨"

@@ -18,8 +18,8 @@
 		"action": "動作"
 	},
 	"placeholder": {
-		"locationName": "例如：Taipei 101",
-		"locationInput": "貼上 Google Maps 短網址或輸入地點",
+		"locationName": "例如：台北 101",
+		"locationInput": "例如：台北 101",
 		"latlon": "緯度,經度 (例如：25.033,121.564)",
 		"address": "例如：台北市信義區市府路45號",
 		"zoom": "例如：16 (數值越大越近)",
@@ -41,7 +41,8 @@
 	"button": {
 		"copy": "複製連結",
 		"copied": "已複製！",
-		"copyFailed": "複製失敗"
+		"copyFailed": "複製失敗",
+		"pasteFromClipboard": "從剪貼簿讀取"
 	},
 	"footer": {
 		"credit": "由 Gemini 為您打造 ✨"

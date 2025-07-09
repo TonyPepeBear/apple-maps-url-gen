@@ -7,7 +7,7 @@
 	export let address: string;
 	export let isLoading: boolean;
 	export let pasteError: string;
-	export let handlePaste: (event: ClipboardEvent) => void;
+	export let readFromClipboard: () => Promise<void>;
 </script>
 
 <div class="space-y-6 border-t pt-4">
@@ -17,22 +17,46 @@
 			<label for="q" class="mb-1 block text-sm font-medium text-gray-700"
 				>{$_('label.locationName')}</label
 			>
-			<div class="relative">
-				<input
-					on:paste={handlePaste}
-					type="text"
-					id="q"
-					bind:value={q}
-					placeholder={$_('placeholder.locationInput')}
-					class="w-full rounded-md border-gray-300 bg-gray-50 p-2 transition-opacity focus:border-blue-500 focus:ring-blue-500"
-					class:opacity-50={isLoading}
+			<div class="flex gap-2">
+				<div class="relative flex-1">
+					<input
+						type="text"
+						id="q"
+						bind:value={q}
+						placeholder={$_('placeholder.locationName')}
+						class="w-full rounded-md border-gray-300 bg-gray-50 p-2 transition-opacity focus:border-blue-500 focus:ring-blue-500"
+						class:opacity-50={isLoading}
+						disabled={isLoading}
+					/>
+					{#if isLoading}
+						<div class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
+							讀取中...
+						</div>
+					{/if}
+				</div>
+				<button
+					type="button"
+					on:click={readFromClipboard}
 					disabled={isLoading}
-				/>
-				{#if isLoading}
-					<div class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
-						讀取中...
-					</div>
-				{/if}
+					class="flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+					title={$_('button.pasteFromClipboard')}
+				>
+					<svg
+						class="h-4 w-4"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+						></path>
+					</svg>
+					<span class="ml-1 hidden sm:inline">{$_('button.pasteFromClipboard')}</span>
+				</button>
 			</div>
 			{#if pasteError}
 				<p class="mt-1 text-xs text-red-600">{pasteError}</p>
