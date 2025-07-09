@@ -4,8 +4,6 @@
     import type { Map, Marker } from 'leaflet';
 
     // --- Leaflet --- 
-    // We need to dynamically import leaflet on the client side
-    // to avoid SSR (Server-Side Rendering) errors, as Leaflet interacts with the `window` object.
     let L: typeof import('leaflet');
     import('leaflet/dist/leaflet.css');
 
@@ -17,13 +15,17 @@
 	let q = ''; // Query
 	let address = ''; // Address
 	let sll = ''; // Search Location
-	let z = 15; // Zoom
+	let z = 16; // Zoom
 	let t = ''; // Map Type
 	let dirflg = ''; // Direction Flag
 	let daddr = ''; // Destination Address
 	let saddr = ''; // Start Address
 	let near = ''; // Near a location
 	let action = ''; // Action type
+
+    // --- UI State ---
+    let isLoading = false;
+    let pasteError = '';
 
     // --- Map State ---
     let mapContainer: HTMLElement;
@@ -32,15 +34,11 @@
 
     onMount(async () => {
         L = (await import('leaflet')).default;
-
         mapInstance = L.map(mapContainer).setView([25.0339, 121.5645], 16); // Taipei 101
-
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         }).addTo(mapInstance);
-
         markerInstance = L.marker(mapInstance.getCenter()).addTo(mapInstance);
-
         mapInstance.on('click', (e) => {
             const newCoords = e.latlng;
             markerInstance.setLatLng(newCoords);
@@ -49,21 +47,16 @@
     });
 
     onDestroy(() => {
-        if (mapInstance) {
-            mapInstance.remove();
-        }
+        if (mapInstance) mapInstance.remove();
     });
 
     // --- Reactive Sync Logic ---
-    // Sync form input TO map
     $: if (ll && mapInstance) {
         const parts = ll.split(',').map(s => parseFloat(s.trim()));
         if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
             const newLatLng = L.latLng(parts[0], parts[1]);
             mapInstance.setView(newLatLng, mapInstance.getZoom() || 13);
-            if (markerInstance) {
-                markerInstance.setLatLng(newLatLng);
-            }
+            if (markerInstance) markerInstance.setLatLng(newLatLng);
         }
     }
 
@@ -97,6 +90,38 @@
 		}
 	}
     const setLocale = (lang: string) => { locale.set(lang); };
+
+    async function handlePaste(event: ClipboardEvent) {
+        const pastedText = event.clipboardData?.getData('text');
+        if (pastedText && (pastedText.includes('maps.app.goo.gl') || pastedText.includes('goo.gl/maps'))) {
+            event.preventDefault();
+            isLoading = true;
+            pasteError = '';
+            try {
+                const response = await fetch('/api/resolve-url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: pastedText })
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.json();
+                    throw new Error(errorBody.message || 'Failed to resolve URL');
+                }
+
+                const data = await response.json();
+                q = data.name;
+                ll = data.ll;
+
+            } catch (error: any) {
+                console.error('Paste handler error:', error);
+                pasteError = error.message;
+                setTimeout(() => { pasteError = ''; }, 5000); // Clear error after 5s
+            } finally {
+                isLoading = false;
+            }
+        }
+    }
 </script>
 
 <svelte:head>
@@ -134,22 +159,30 @@
                     <div class="space-y-6 pt-4 border-t">
                         <h2 class="text-xl font-semibold text-gray-900">{$_('section.general')}</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
+                            <div class="sm:col-span-2">
                                 <label for="q" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.locationName')}</label>
-                                <input type="text" id="q" bind:value={q} placeholder={$_('placeholder.locationName')} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+                                <div class="relative">
+                                    <input on:paste={handlePaste} type="text" id="q" bind:value={q} placeholder="貼上 Google Maps 短網址或輸入地點" class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 transition-opacity" class:opacity-50={isLoading} disabled={isLoading}>
+                                    {#if isLoading}
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">讀取中...</div>
+                                    {/if}
+                                </div>
+                                {#if pasteError}
+                                    <p class="mt-1 text-xs text-red-600">{pasteError}</p>
+                                {/if}
                             </div>
                             <div>
                                 <label for="ll" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.latlon')}</label>
                                 <input type="text" id="ll" bind:value={ll} placeholder={$_('placeholder.latlon')} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
                             </div>
-                            <div class="sm:col-span-2">
-                                <label for="address" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.address')}</label>
-                                <input type="text" id="address" bind:value={address} placeholder={$_('placeholder.address')} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
-                            </div>
                              <div>
                                 <label for="z" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.zoom')}</label>
                                 <input type="number" id="z" bind:value={z} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
                                 <p class="mt-1 text-xs text-gray-500">{$_('placeholder.zoom')}</p>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label for="address" class="block text-sm font-medium text-gray-700 mb-1">{$_('label.address')}</label>
+                                <input type="text" id="address" bind:value={address} placeholder={$_('placeholder.address')} class="w-full bg-gray-50 border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
                             </div>
                         </div>
                     </div>
@@ -203,7 +236,7 @@
                 </div>
 
                 <!-- Right Column: Map -->
-                <div bind:this={mapContainer} class="min-h-[400px] lg:min-h-full w-full rounded-lg shadow-inner border border-gray-200" id="map-container">
+                <div bind:this={mapContainer} class="min-h-[400px] lg:min-h-full w-full rounded-lg shadow-inner border border-gray-200 bg-gray-100" id="map-container">
                     <!-- Leaflet Map Renders Here -->
                 </div>
             </div>
