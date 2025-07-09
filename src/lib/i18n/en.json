@@ -1,53 +1,53 @@
 {
-    "title": "Apple Maps URL Generator",
-    "subtitle": "Easily create custom Apple Maps links",
-    "section": {
-        "general": "General Map Settings",
-        "navigation": "Navigation Settings",
-        "generatedUrl": "Generated Link"
-    },
-    "label": {
-        "locationName": "Location Name",
-        "latlon": "Center Latitude/Longitude",
-        "address": "Address",
-        "zoom": "Zoom Level",
-        "mapType": "Map Type",
-        "startPoint": "Starting Point",
-        "destination": "Destination",
-        "navMode": "Navigation Mode",
-        "action": "Action"
-    },
-    "placeholder": {
-        "locationName": "e.g., Taipei 101",
-        "latlon": "latitude,longitude (e.g., 25.033,121.564)",
-        "address": "e.g., 1 Infinite Loop, Cupertino, CA",
-        "zoom": "e.g., 16 (higher is closer)",
-        "startPoint": "Current Location or address/lat,lon",
-        "destination": "Address or lat,lon"
-    },
-    "option": {
-        "default": "Default",
-        "unspecified": "Unspecified",
-        "standard": "Standard",
-        "satellite": "Satellite",
-        "hybrid": "Hybrid",
-        "driving": "Driving",
-        "walking": "Walking",
-        "transit": "Transit",
-        "showMap": "Show Map (map)",
-        "showDirections": "Show Directions (directions)"
-    },
-    "button": {
-        "copy": "Copy Link",
-        "copied": "Copied!",
-        "copyFailed": "Copy Failed"
-    },
-    "footer": {
-        "credit": "Built for you by Gemini ✨"
-    },
-    "lang": {
-        "zh-TW": "繁體中文",
-        "en": "English",
-        "ja": "日本語"
-    }
+	"title": "Apple Maps URL Generator",
+	"subtitle": "Easily create custom Apple Maps links",
+	"section": {
+		"general": "General Map Settings",
+		"navigation": "Navigation Settings",
+		"generatedUrl": "Generated Link"
+	},
+	"label": {
+		"locationName": "Location Name",
+		"latlon": "Center Latitude/Longitude",
+		"address": "Address",
+		"zoom": "Zoom Level",
+		"mapType": "Map Type",
+		"startPoint": "Starting Point",
+		"destination": "Destination",
+		"navMode": "Navigation Mode",
+		"action": "Action"
+	},
+	"placeholder": {
+		"locationName": "e.g., Taipei 101",
+		"latlon": "latitude,longitude (e.g., 25.033,121.564)",
+		"address": "e.g., 1 Infinite Loop, Cupertino, CA",
+		"zoom": "e.g., 16 (higher is closer)",
+		"startPoint": "Current Location or address/lat,lon",
+		"destination": "Address or lat,lon"
+	},
+	"option": {
+		"default": "Default",
+		"unspecified": "Unspecified",
+		"standard": "Standard",
+		"satellite": "Satellite",
+		"hybrid": "Hybrid",
+		"driving": "Driving",
+		"walking": "Walking",
+		"transit": "Transit",
+		"showMap": "Show Map (map)",
+		"showDirections": "Show Directions (directions)"
+	},
+	"button": {
+		"copy": "Copy Link",
+		"copied": "Copied!",
+		"copyFailed": "Copy Failed"
+	},
+	"footer": {
+		"credit": "Built for you by Gemini ✨"
+	},
+	"lang": {
+		"zh-TW": "繁體中文",
+		"en": "English",
+		"ja": "日本語"
+	}
 }

@@ -5,6 +5,6 @@ register('ja', () => import('./ja.json'));
 register('zh-TW', () => import('./zh-TW.json'));
 
 init({
-    fallbackLocale: 'zh-TW',
-    initialLocale: getLocaleFromNavigator(),
+	fallbackLocale: 'zh-TW',
+	initialLocale: getLocaleFromNavigator()
 });
