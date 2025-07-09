@@ -16,7 +16,13 @@
 			attribution:
 				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
 		}).addTo(map);
-		const marker = L.marker(map.getCenter()).addTo(map);
+		const divIcon = L.divIcon({
+			html: '<i class="fas fa-map-marker-alt fa-2x"></i>',
+			iconSize: [32, 32],
+			iconAnchor: [16, 32],
+			className: ''
+		});
+		const marker = L.marker(map.getCenter(), { icon: divIcon }).addTo(map);
 		map.on('click', (e) => {
 			const newCoords = e.latlng;
 			marker.setLatLng(newCoords);
