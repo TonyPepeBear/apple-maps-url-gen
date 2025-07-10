@@ -18,7 +18,7 @@ import path from 'path';
 		path.join(rootDir, 'GEMINI.md'),
 		path.join(rootDir, 'CLAUDE.md'),
 		path.join(rootDir, '.clinerules', '00.README.MD'),
-		path.join(rootDir, '.roo', 'rules', '00.README.MD'),
+		path.join(rootDir, '.roo', 'rules', '00.README.MD')
 	];
 
 	for (const dest of targets) {
