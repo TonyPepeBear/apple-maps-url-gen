@@ -33,7 +33,7 @@
 		"tailwindcss": "^4.0.0",
 		"typescript": "^5.0.0",
 		"vite": "^6.2.6",
-		"wrangler": "^4.24.0"
+		"wrangler": "^4.59.3"
 	},
 	"dependencies": {
 		"leaflet": "^1.9.4",
